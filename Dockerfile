@@ -9,15 +9,16 @@ RUN npm install
 # Copy all files
 COPY . .
 
-# Build işlemini yap ve sonucu kontrol et
+# Build ve sonuçları koru
 RUN npm run build && \
     echo "=== Build tamamlandı ===" && \
-    ls -la .medusa/server/public/ && \
-    echo "=== Admin dosyaları ===" && \
     ls -la .medusa/server/public/admin/
+
+# MEDUSA_ADMIN_PATH environment variable
+ENV MEDUSA_ADMIN_PATH=/app/.medusa/server/public/admin
 
 # Port
 EXPOSE 9000
 
-# Start
-CMD ["npm", "start"]
+# Start with debug
+CMD ["sh", "-c", "echo 'Checking admin files before start:' && ls -la .medusa/server/public/admin/ && npm start"]
