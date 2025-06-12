@@ -1,11 +1,9 @@
 {
-  "$schema": "https://railway.com/railway.schema.json",
-
+  "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "npm ci && npm run build && npx medusa build"
+    "buildCommand": "npm ci --legacy-peer-deps --omit=dev && npx medusa build"
   },
-
   "deploy": {
     "preDeployCommand": ["npx medusa migrations run"],
     "startCommand": "npx medusa start --port $PORT",
