@@ -1,11 +1,31 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
+
+  /* ---------- BUILD ---------- */
   "build": {
+    // Varsayılan builder zaten Nixpacks, ama açık bırakmak okunaklı kılıyor
     "builder": "NIXPACKS",
-    "buildCommand": "npm install && npm run build"
+
+    // 1- NPM bağımlılıkları  |  2- TypeScript/Webpack build’in   |  3- Medusa prod build’i
+    "buildCommand": "npm ci && npm run build && npx medusa build",
+
+    // Monorepo’da yalnızca backend değiştiğinde deploy tetikle
+    "watchPatterns": ["apps/backend/**", "packages/**"]       /* optional */
   },
+
+  /* ---------- DEPLOY ---------- */
   "deploy": {
-    "startCommand": "npm start",
+    // Run-time’da yalnızca server’ı ayağa kaldır
+    "startCommand": "npx medusa start --port $PORT",
+
+    // DB migration’larını build-den sonra, start’tan önce çalıştır
+    "preDeployCommand": "npx medusa migrations run",
+
+    // Sağlık kontrolü → Railway yeni pod’u ancak /health 200 dönünce traffic’e alır
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 30,
+
+    // Crash loop koruması
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
